@@ -1,5 +1,5 @@
 /// <reference types="monaco-editor" />
-import { InfoRecord, LeanJsOpts, Message } from 'lean-client-js-browser';
+import { InfoRecord, LeanJsOpts, loadBufferFromURLCached, Message, WebWorkerTransport } from 'lean-client-js-browser';
 import * as React from 'react';
 import { findDOMNode, render } from 'react-dom';
 import * as sp from 'react-split-pane';
@@ -182,6 +182,7 @@ class PageHeader extends React.Component<PageHeaderProps, PageHeaderState> {
     this.state = { currentlyRunning: true };
     this.onFile = this.onFile.bind(this);
     // this.restart = this.restart.bind(this);
+    this.mount = this.mount.bind(this);
   }
 
   componentWillMount() {
@@ -220,6 +221,15 @@ class PageHeader extends React.Component<PageHeaderProps, PageHeaderState> {
   //   registerLeanLanguage(leanJsOpts);
   // }
 
+  mount() {
+    if (!server) { return; }
+    const conn = (server.transport as WebWorkerTransport).conn;
+    conn.send({ command: 'load-zip', url: './mathlib.zip' });
+    // const t = server.transport; // as InProcessTransport;
+    // const zipPromise = loadBufferFromURLCached('./mathlib.zip');
+    // t.loadZip(zipPromise).then((success) => console.log('zip loaded?', success));
+  }
+
   render() {
     const isRunning = this.state.currentlyRunning ? 'running...' : 'ready!';
     const runColor = this.state.currentlyRunning ? 'orange' : 'lightgreen';
@@ -240,8 +250,9 @@ class PageHeader extends React.Component<PageHeaderProps, PageHeaderState> {
             <UrlForm url={this.props.url} onSubmit={this.props.onSubmit}
             clearUrlParam={this.props.clearUrlParam}/>
             <div style={{float: 'right', margin: '1em'}}>
-              <button onClick={this.props.onSave}>Download editor<br/> content to disk</button>
+              <button onClick={this.props.onSave}>Save</button>
               {/* <button onClick={this.restart}>Restart server:<br/>will redownload<br/>library.zip!</button> */}
+              {<button onClick={this.mount}>mount</button>}
             </div>
             <label className='logo' htmlFor='lean_upload'>Load .lean from disk:&nbsp;</label>
             <input id='lean_upload' type='file' accept='.lean' onChange={this.onFile}/>
@@ -495,7 +506,7 @@ const leanJsOpts: LeanJsOpts = {
 (window as any).require(['vs/editor/editor.main'], () => {
   registerLeanLanguage(leanJsOpts);
   render(
-      <App />,
-      document.getElementById('root'),
+    <App />,
+    document.getElementById('root'),
   );
 });
