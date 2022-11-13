@@ -27,7 +27,8 @@ jobs:
       - name: Get Lean version
         run: |
           set -o pipefail
-          source elan_setup.sh
+          # source elan_setup.sh
+          export LATEST_BROWSER_LEAN=3.46  # TODO: revert once we solve the 100Mb limit issue
           echo "LATEST_BROWSER_LEAN=$LATEST_BROWSER_LEAN" >> $GITHUB_ENV
 
       - name: install Python
@@ -62,7 +63,7 @@ jobs:
           cd combined_lib/
           git init
           elan override set leanprover-community/lean:$LATEST_BROWSER_LEAN
-          leanproject --no-lean-upgrade up
+          # leanproject --no-lean-upgrade up  # TODO: restore
           rm -rf _target/deps/mathlib/test
           rm -rf _target/deps/mathlib/scripts
           rm -rf _target/deps/mathlib/roadmap
