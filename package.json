@@ -11,7 +11,7 @@
   "dependencies": {
     "@types/node": "^9.4.6",
     "@types/react": "16.8.17",
-    "@types/react-dom": "^18.2.4",
+    "@types/react-dom": "^16.9.19",
     "ajv": "^6.10.0",
     "buffer": "^6.0.3",
     "lean-client-js-browser": "^3.5.1",
