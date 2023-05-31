@@ -529,7 +529,7 @@ function ModalContent({ onClose, modalRef, onKeyDown, clickAway }) {
             const req = indexedDB.deleteDatabase('leanlibrary');
             req.onsuccess = () => {
               console.log('Deleted leanlibrary successfully');
-              location.reload(true);
+              (location.reload as (cache: boolean) => void)(true);
             };
             req.onerror = () => {
               console.log("Couldn't delete leanlibrary");
@@ -544,13 +544,13 @@ function ModalContent({ onClose, modalRef, onKeyDown, clickAway }) {
                 .then(() => fetch(leanJsOpts.webassemblyWasm, {cache: 'reload'}))
                 .then(() => {
                 console.log('Updated JS & WASM cache successfully');
-                location.reload(true);
+                (location.reload as (cache: boolean) => void)(true);
               }).catch((e) => console.log(e));
             } else {
               fetch(leanJsOpts.javascript, {cache: 'reload'})
                 .then(() => {
                 console.log('Updated JS cache successfully');
-                location.reload(true);
+                (location.reload as (cache: boolean) => void)(true);
               }).catch((e) => console.log(e));
             }
           }}>Clear JS/WASM cache and refresh</button></p>

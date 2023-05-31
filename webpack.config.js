@@ -3,14 +3,13 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const TerserPlugin = require('terser-webpack-plugin-legacy');
-
 const MonacoEditorSrc = path.join(__dirname, 'node_modules', 'react-monaco-editor');
 const VSMonacoEditorSrc = path.join(__dirname, 'node_modules', 'monaco-editor', 'min', 'vs');
 
 let distDir = path.resolve(__dirname, 'dist');
 
 module.exports = {
+    mode: 'production',
     entry: {
         jsx: './src/index.tsx',
         // html: './public/index.html',
@@ -23,7 +22,11 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
-        alias: {'react-monaco-editor': MonacoEditorSrc}
+        alias: {'react-monaco-editor': MonacoEditorSrc},
+        fallback: { 
+            "path": require.resolve("path-browserify"),
+            "buffer": require.resolve("buffer/")
+        }
     },
     module: {
         rules: [
@@ -33,7 +36,7 @@ module.exports = {
             },
             {
                 test: /\.tsx?$/,
-                loader: [
+                use: [
     // To use babel in lean-client-js-browser, add the following to this package.json
     // "babel-core": "^6.26.3",
     // "babel-loader": "^7.1.2",
@@ -46,8 +49,13 @@ module.exports = {
         ],
     },
     devServer: {
-        contentBase: distDir,
-        publicPath: '/',
+        allowedHosts: 'all',
+        static: [
+            {
+                directory: distDir,
+                publicPath: '/' 
+            },
+        ]
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -60,12 +68,10 @@ module.exports = {
             { from: 'public/display-goal-light.svg', to: 'display-goal-light.svg', },
             { from: 'public/display-list-light.svg', to: 'display-list-light.svg', },
         ]),
-        new TerserPlugin(),
+        new webpack.ProvidePlugin({
+            Buffer: ['buffer', 'Buffer'],
+        }),
     ],
-    node: {
-        child_process: 'empty',
-        readline: 'empty',
-    },
     externals: {
         // react: 'require("react")',
         // 'react-dom': 'require("react-dom")',
