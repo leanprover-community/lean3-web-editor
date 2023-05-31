@@ -61,13 +61,15 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'public/index.html'
         }),
-        new CopyWebpackPlugin([
-            { from: VSMonacoEditorSrc, to: 'vs', },
-            { from: 'public/index.css', to: 'index.css', },
-            { from: 'public/lean_logo.svg', to: 'lean_logo.svg', },
-            { from: 'public/display-goal-light.svg', to: 'display-goal-light.svg', },
-            { from: 'public/display-list-light.svg', to: 'display-list-light.svg', },
-        ]),
+        new CopyWebpackPlugin({
+            patterns: [
+                { from: VSMonacoEditorSrc, to: 'vs', },
+                { from: 'public/index.css', to: 'index.css', },
+                { from: 'public/lean_logo.svg', to: 'lean_logo.svg', },
+                { from: 'public/display-goal-light.svg', to: 'display-goal-light.svg', },
+                { from: 'public/display-list-light.svg', to: 'display-list-light.svg', },
+            ]
+        }),
         new webpack.ProvidePlugin({
             Buffer: ['buffer', 'Buffer'],
         }),
